@@ -12,6 +12,17 @@ provider "aws" {
   region = var.region
 }
 
+locals {
+  private_subnet_names = [
+    for i, az in var.azs :
+    "${var.namespace}-subnet-private${i + 1}-${az}"
+  ]
+  public_subnet_names = [
+    for i, az in var.azs :
+    "${var.namespace}-subnet-public${i + 1}-${az}"
+  ]
+}
+
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
   version = "~> 5.0"
@@ -23,20 +34,20 @@ module "vpc" {
   private_subnets = var.private_subnets
   public_subnets  = var.public_subnets
 
+  private_subnet_names = local.private_subnet_names
+  public_subnet_names  = local.public_subnet_names
+
   enable_nat_gateway      = var.enable_nat_gateway
   single_nat_gateway      = var.single_nat_gateway
   one_nat_gateway_per_az  = var.one_nat_gateway_per_az
-  enable_internet_gateway = var.enable_internet_gateway
+  create_igw              = var.create_igw
 
   tags = var.tags
 
   vpc_tags = {
     Name = "${var.namespace}-vpc"
   }
-  public_subnet_tags = {
-    Name = "${var.namespace}-public"
-  }
-  private_subnet_tags = {
-    Name = "${var.namespace}-private"
+  igw_tags = {
+    Name = "${var.namespace}-igw"
   }
 }

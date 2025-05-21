@@ -45,10 +45,16 @@ variable "tags" {
   default     = {}
 }
 
-variable "enable_nat_gateway" {
+variable "create_igw" {
   description = "Enable NAT Gateway for private subnets."
   type        = bool
   default     = true
+}
+
+variable "enable_nat_gateway" {
+  description = "Create a NAT Gateway across all AZs."
+  type        = bool
+  default     = false
 }
 
 variable "single_nat_gateway" {
